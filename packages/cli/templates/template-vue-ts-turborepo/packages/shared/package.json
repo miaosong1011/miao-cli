@@ -1,0 +1,17 @@
+{
+    "name": "@repo/shared",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsup src/index.ts --dts --format esm,cjs --outDir dist",
+        "dev": "tsup src/index.ts --watch --dts --format esm,cjs --outDir dist",
+        "lint": "eslint ."
+    },
+    "devDependencies": {
+        "tsup": "8.2.4",
+        "typescript": "5.9.3"
+    }
+}

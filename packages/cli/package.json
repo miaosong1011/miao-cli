@@ -1,0 +1,40 @@
+{
+    "name": "@miao/cli",
+    "version": "0.1.0",
+    "description": "CLI for creating and managing miao frontend projects",
+    "license": "MIT",
+    "engines": {
+        "node": ">=20"
+    },
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "bin": {
+        "miao": "bin/miao"
+    },
+    "files": [
+        "dist",
+        "bin",
+        "templates"
+    ],
+    "scripts": {
+        "dev": "tsup --watch",
+        "build": "tsup",
+        "pretest": "pnpm build",
+        "test": "node --test \"tests/**/*.test.mjs\"",
+        "release:check": "pnpm build && pnpm test && rm -rf ./.pack && pnpm pack --pack-destination ./.pack",
+        "release": "pnpm release:check && npm publish"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "@types/prompts": "2.4.9",
+        "@types/fs-extra": "11.0.4",
+        "tsup": "8.2.4",
+        "commander": "12.1.0",
+        "picocolors": "1.0.1",
+        "prompts": "2.4.2",
+        "consola": "3.2.3",
+        "giget": "1.2.3",
+        "ora": "8.0.1",
+        "fs-extra": "11.2.0"
+    }
+}
