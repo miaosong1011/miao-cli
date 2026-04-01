@@ -4,7 +4,7 @@
 
 ## 项目简介
 
-`miao-cli` 目前的核心包是 `@miao/cli`。  
+`miao-cli` 目前的核心包是 `@miaosong1011/miao-cli`。  
 通过 `miao create <project-name>`，可以交互式选择框架和模板，自动拷贝项目模板并生成新的 `package.json`，帮助你快速起步。
 
 ## 核心能力
@@ -51,7 +51,7 @@ pnpm build
 在 `packages/cli` 下可直接运行：
 
 ```bash
-pnpm --filter @miao/cli dev
+pnpm --filter @miaosong1011/miao-cli dev
 ```
 
 ## CLI 使用
@@ -137,7 +137,7 @@ pnpm spellcheck  # 拼写检查
 pnpm preflight
 ```
 
-该命令会按顺序执行 `lint`、`typecheck`、`test` 和 `@miao/cli` 构建。
+该命令会按顺序执行 `lint`、`typecheck`、`test` 和 `@miaosong1011/miao-cli` 构建。
 
 发布前干跑检查（不会真正发布）：
 
@@ -147,10 +147,10 @@ pnpm release:check
 
 该命令会在 `packages/cli/.pack` 生成打包产物用于检查发布内容。
 
-如需正式发布 `@miao/cli`：
+如需正式发布 `@miaosong1011/miao-cli`：
 
 ```bash
-pnpm --filter @miao/cli release
+pnpm --filter @miaosong1011/miao-cli release
 ```
 
 ## 版本与变更日志（Changesets）
