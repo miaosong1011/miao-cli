@@ -38,6 +38,13 @@ jobs:
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Verify npm publish identity
+              run: |
+                  npm whoami
+                  npm view @miaosong1011/miao-cli version
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
             - name: Create release PR or publish from main
               uses: changesets/action@v1
               with:
