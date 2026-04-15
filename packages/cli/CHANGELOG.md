@@ -1,5 +1,11 @@
 # @miaosong1011/miao-cli
 
+## 0.1.2
+
+### Patch Changes
+
+-   d025987: Fix CI workflows and upgrade pnpm to 10.x for audit endpoint compatibility
+
 ## 0.1.1
 
 ### Patch Changes
