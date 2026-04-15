@@ -113,7 +113,7 @@ test('config set/get/list manages global remote defaults', () => {
         assert.equal(getSource.status, 0)
         assert.equal(getSource.stdout.replace(/^\[log]\s*/, '').trim(), source)
 
-        const config = JSON.parse(listJson.stdout)
+        const config = JSON.parse(listJson.stdout.replace(/^\[log\]\s*/, ''))
         assert.equal(config.remoteSource, source)
         assert.equal(config.remoteRef, ref)
     } finally {
