@@ -131,7 +131,7 @@ pnpm spellcheck  # 拼写检查
 
 ## 质量与发布
 
-发布前建议先执行：
+本地开发时，发布前建议先执行：
 
 ```bash
 pnpm preflight
@@ -139,7 +139,7 @@ pnpm preflight
 
 该命令会按顺序执行 `lint`、`typecheck`、`test` 和 `@miaosong1011/miao-cli` 构建。
 
-发布前干跑检查（不会真正发布）：
+如需在本地验证发布内容，但不真正发布：
 
 ```bash
 pnpm release:check
@@ -147,13 +147,46 @@ pnpm release:check
 
 该命令会在 `packages/cli/.pack` 生成打包产物用于检查发布内容。
 
-如需正式发布 `@miaosong1011/miao-cli`：
+## 版本与发布（推荐 CI 自动发布）
+
+推荐发布路径已经调整为：**本地只负责生成 changeset 并推送，真正发布交给 GitHub Actions 在 `main` 分支自动完成**。
+
+### 推荐流程
+
+1. 生成功能对应的 changeset：
 
 ```bash
-pnpm --filter @miaosong1011/miao-cli release
+pnpm changeset
 ```
 
+2. 提交代码与 changeset：
+
+```bash
+git add .
+git commit -m "chore: add changeset"
+```
+
+3. 推送到 `main`：
+
+```bash
+git push origin main
+```
+
+4. GitHub Actions 会自动执行发布流程：
+
+-   在 `.github/workflows/release.yml` 中监听 `main` 分支 push
+-   使用 `changesets/action` 自动处理版本与发布
+-   使用仓库中的 `NPM_TOKEN` 完成 npm 发布
+
+### CI 发布前置条件
+
+-   仓库已配置 `NPM_TOKEN` secret
+-   `NPM_TOKEN` 对 `@miaosong1011/miao-cli` 具备发布权限
+-   如果 npm 账户启用了发布保护，需要使用支持发布的 token（例如满足 npm 当前策略要求的 token 配置）
+
 ## 版本与变更日志（Changesets）
+
+Changesets 仍然是版本与 changelog 的唯一来源。
 
 新增对外能力后，先生成变更集：
 
@@ -161,17 +194,30 @@ pnpm --filter @miaosong1011/miao-cli release
 pnpm changeset
 ```
 
-将 changeset 应用到版本号与 changelog：
+本地如果需要预览版本与 changelog 变更，可以手动执行：
 
 ```bash
 pnpm version:packages
 ```
 
-执行发布（会先走 `release:check`）：
+## 本地发布命令（仅备用，不作为主流程推荐）
+
+下面这些命令仍然保留，方便维护者在特殊场景下做本地检查或手动发布，但**默认不再推荐作为日常发布路径**：
 
 ```bash
 pnpm publish:packages
+pnpm --filter @miaosong1011/miao-cli release
 ```
 
-CI 已提供 `release.yml`，在 `main` 分支上自动创建 release PR，并在满足条件后发布。  
-使用前请在仓库 Secret 中配置 `NPM_TOKEN`。
+其中：
+
+-   `pnpm publish:packages` 会先执行 `pnpm release:check`，再执行 `changeset publish`
+-   `pnpm --filter @miaosong1011/miao-cli release` 会直接对单包执行 `npm publish`
+
+如果只是想验证打包结果，优先使用：
+
+```bash
+pnpm release:check
+```
+
+CI 已提供 `release.yml`，现在默认把它作为主发布链路使用。
