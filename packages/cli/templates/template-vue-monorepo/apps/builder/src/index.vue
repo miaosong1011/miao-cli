@@ -6,7 +6,7 @@
 
 // const user: User = {
 //     id: 1,
-//     name: 'heyi'
+//     name: 'hey'
 // }
 </script>
 
