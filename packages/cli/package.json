@@ -20,7 +20,7 @@
         "dev": "tsup --watch",
         "build": "tsup",
         "pretest": "pnpm build",
-        "test": "node --test \"tests/**/*.test.mjs\"",
+        "test": "node --test tests/e2e/*.test.mjs",
         "release:check": "pnpm build && pnpm test && rm -rf ./.pack && pnpm pack --pack-destination ./.pack",
         "release": "pnpm release:check && npm publish"
     },
