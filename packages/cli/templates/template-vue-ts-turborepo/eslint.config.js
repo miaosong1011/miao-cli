@@ -6,6 +6,9 @@ import importSort from 'eslint-plugin-simple-import-sort'
 
 export default [
     {
+        ignores: ['dist/**', '**/dist/**']
+    },
+    {
         files: ['**/*.{ts,tsx,vue}'],
         rules: {
             ...js.configs.recommended.rules,

@@ -18,7 +18,7 @@
         "format": "prettier --write .",
         "spellcheck": "cspell lint --dot --gitignore --color --cache --show-suggestions \"(packages|apps)/**/*.@(html|js|cjs|mjs|ts|tsx|css|scss|md|vue)\"",
         "commit": "git-cz",
-        "prepare": "is-ci || husky install"
+        "prepare": "husky"
     },
     "config": {
         "commitizen": {
