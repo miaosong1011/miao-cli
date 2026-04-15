@@ -7,6 +7,9 @@ import importSort from 'eslint-plugin-simple-import-sort'
 
 export default [
     {
+        ignores: ['dist/**', '**/dist/**']
+    },
+    {
         files: ['**/*.{ts,tsx,vue}'],
         languageOptions: {
             parser: vueEslintParser,
