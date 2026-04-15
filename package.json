@@ -2,7 +2,7 @@
     "name": "miao-cli",
     "version": "0.0.1",
     "description": "Enterprise-ready scaffolding monorepo for miao CLI",
-    "packageManager": "pnpm@9.7.0",
+    "packageManager": "pnpm@10.18.3",
     "pnpm": {
         "ignoreMissing": [
             "*"
