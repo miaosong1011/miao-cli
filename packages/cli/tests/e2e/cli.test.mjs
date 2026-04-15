@@ -41,10 +41,7 @@ test('create remote reports configured remote source and ref on failure', () => 
     try {
         const source = 'invalid:foo/bar'
         const ref = 'release-1'
-        const result = runMiao(
-            ['create', 'remote-app', '--remote', '--remote-source', source, '--remote-ref', ref],
-            cwd
-        )
+        const result = runMiao(['create', 'remote-app', '--remote', '--remote-source', source, '--remote-ref', ref], cwd)
 
         const output = `${result.stdout}\n${result.stderr}`
         assert.equal(result.status, 1)
@@ -79,11 +76,20 @@ test('template list --json prints built-in templates', () => {
         const result = runMiao(['template', 'list', '--json'], cwd)
         assert.equal(result.status, 0)
 
-        const payload = JSON.parse(result.stdout)
+        const payload = JSON.parse(result.stdout.replace(/^\[log\]\s*/, ''))
         assert.equal(Array.isArray(payload), true)
-        assert.equal(payload.some(item => item.framework === 'vue'), true)
-        assert.equal(payload.some(item => item.framework === 'react'), true)
-        assert.equal(payload.some(item => item.framework === 'vanilla'), true)
+        assert.equal(
+            payload.some(item => item.framework === 'vue'),
+            true
+        )
+        assert.equal(
+            payload.some(item => item.framework === 'react'),
+            true
+        )
+        assert.equal(
+            payload.some(item => item.framework === 'vanilla'),
+            true
+        )
     } finally {
         rmSync(cwd, { recursive: true, force: true })
     }
@@ -105,7 +111,7 @@ test('config set/get/list manages global remote defaults', () => {
         assert.equal(setSource.status, 0)
         assert.equal(setRef.status, 0)
         assert.equal(getSource.status, 0)
-        assert.equal(getSource.stdout.trim(), source)
+        assert.equal(getSource.stdout.replace(/^\[log]\s*/, '').trim(), source)
 
         const config = JSON.parse(listJson.stdout)
         assert.equal(config.remoteSource, source)
