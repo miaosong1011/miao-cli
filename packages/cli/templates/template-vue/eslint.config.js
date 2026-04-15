@@ -1,10 +1,13 @@
 import js from '@eslint/js'
-import globals from 'globals'
-import pluginVue from 'eslint-plugin-vue'
-import vueEslintParser from 'vue-eslint-parser'
 import importSort from 'eslint-plugin-simple-import-sort'
+import pluginVue from 'eslint-plugin-vue'
+import globals from 'globals'
+import vueEslintParser from 'vue-eslint-parser'
 
 export default [
+    {
+        ignores: ['dist/**', '**/dist/**']
+    },
     {
         files: ['**/*.{js,vue}'],
         languageOptions: {

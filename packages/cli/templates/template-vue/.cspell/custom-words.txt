@@ -1,5 +1,6 @@
 cz-git
 commitlint
+Avenir
 lint-staged
 monorepo
 pnpm
