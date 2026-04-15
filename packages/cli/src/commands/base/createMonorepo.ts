@@ -11,6 +11,7 @@ import prompts from 'prompts'
 
 import { templateChoices } from '../../constants/templates'
 import { Framework, PackageManager, Template } from '../../types/template'
+import { ensureStandaloneGitRepo, hasHuskyHooks, installHuskyHooks } from '../../utils/huskySetup'
 import { loadTemplate } from '../../utils/loadTemplate'
 import { logger } from '../../utils/logger'
 import { warnIfCreatingInsideWorkspace } from '../../utils/projectPathWarning'
@@ -74,7 +75,11 @@ const installDependencies = async (projectPath: string, packageManager: PackageM
     await new Promise<void>((resolvePromise, reject) => {
         const child = spawn(packageManager, params, {
             stdio: 'inherit',
-            cwd: projectPath
+            cwd: projectPath,
+            env: {
+                ...process.env,
+                HUSKY: '0'
+            }
         })
 
         child.on('error', error => {
@@ -89,6 +94,27 @@ const installDependencies = async (projectPath: string, packageManager: PackageM
             reject(new Error(`Install dependencies failed with exit code ${code ?? 1}.`))
         })
     })
+}
+
+const prepareHusky = async (projectPath: string) => {
+    if (!hasHuskyHooks(projectPath)) {
+        return 'no-husky' as const
+    }
+
+    const gitRepoStatus = await ensureStandaloneGitRepo(projectPath)
+    if (gitRepoStatus === 'ancestor-repo') {
+        logger.warn(pc.yellow('Skipped Husky initialization because the project is inside an existing Git repository.'))
+    }
+
+    return gitRepoStatus
+}
+
+const initHusky = async (projectPath: string, gitRepoStatus?: Awaited<ReturnType<typeof prepareHusky>>) => {
+    if (!hasHuskyHooks(projectPath) || gitRepoStatus === 'no-husky' || gitRepoStatus === 'ancestor-repo') {
+        return
+    }
+
+    await installHuskyHooks(projectPath)
 }
 
 export const createMonorepo = (program: Command) =>
@@ -168,13 +194,18 @@ export const createMonorepo = (program: Command) =>
                 if (install) {
                     const resolvedPackageManager = resolvePackageManager(packageManager)
                     logger.info(pc.green(`Installing dependencies with ${resolvedPackageManager}...`))
+                    const gitRepoStatus = await prepareHusky(projectPath)
                     await installDependencies(projectPath, resolvedPackageManager)
+                    await initHusky(projectPath, gitRepoStatus)
                 }
 
                 logger.log('')
                 logger.log(pc.bold('Next steps:'))
                 logger.log(`  cd ${projectName}`)
                 if (!install) {
+                    if (hasHuskyHooks(projectPath)) {
+                        logger.log('  git init')
+                    }
                     logger.log('  pnpm install')
                 }
                 logger.log('  pnpm check')

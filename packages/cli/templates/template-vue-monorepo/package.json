@@ -18,7 +18,7 @@
         "format": "prettier --write .",
         "spellcheck": "cspell lint --dot --gitignore --color --cache --show-suggestions \"(packages|apps)/**/*.@(html|js|cjs|mjs|ts|tsx|css|scss|md|vue)\"",
         "commit": "git-cz",
-        "prepare": "husky"
+        "prepare": "is-ci || husky install"
     },
     "keywords": [],
     "author": "miaosong",
@@ -31,7 +31,7 @@
         "*.{md,json}": [
             "prettier --cache --write --no-error-on-unmatched-pattern"
         ],
-        "*.{css,less}": [
+        "*.{css,less,scss,vue}": [
             "stylelint --fix",
             "prettier --cache --write"
         ],
@@ -42,6 +42,10 @@
         "*.{ts,tsx}": [
             "eslint --fix",
             "prettier --write --cache --parser=typescript"
+        ],
+        "*.vue": [
+            "eslint --fix",
+            "prettier --cache --write"
         ]
     },
     "devDependencies": {

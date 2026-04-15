@@ -6,11 +6,13 @@
 import { Command } from 'commander'
 import { spawn } from 'node:child_process'
 import { resolve } from 'node:path'
+import ora from 'ora'
 import pc from 'picocolors'
 import prompts from 'prompts'
 
 import { templateChoices } from '../../constants/templates'
 import { Framework, PackageManager, Template } from '../../types/template'
+import { ensureStandaloneGitRepo, hasHuskyHooks, installHuskyHooks } from '../../utils/huskySetup'
 import { loadTemplate } from '../../utils/loadTemplate'
 import { logger } from '../../utils/logger'
 import { warnIfCreatingInsideWorkspace } from '../../utils/projectPathWarning'
@@ -89,7 +91,11 @@ const installDependencies = async (projectPath: string, packageManager: PackageM
     await new Promise<void>((resolvePromise, reject) => {
         const child = spawn(packageManager, params, {
             stdio: 'inherit',
-            cwd: projectPath
+            cwd: projectPath,
+            env: {
+                ...process.env,
+                HUSKY: '0'
+            }
         })
 
         child.on('error', error => {
@@ -104,6 +110,40 @@ const installDependencies = async (projectPath: string, packageManager: PackageM
             reject(new Error(`Install dependencies failed with exit code ${code ?? 1}.`))
         })
     })
+}
+
+const prepareHusky = async (projectPath: string) => {
+    if (!hasHuskyHooks(projectPath)) {
+        return 'no-husky' as const
+    }
+
+    const gitRepoStatus = await ensureStandaloneGitRepo(projectPath)
+    if (gitRepoStatus === 'ancestor-repo') {
+        logger.warn(pc.yellow('Skipped Husky initialization because the project is inside an existing Git repository.'))
+    }
+
+    return gitRepoStatus
+}
+
+const initHusky = async (projectPath: string, gitRepoStatus?: Awaited<ReturnType<typeof prepareHusky>>) => {
+    if (!hasHuskyHooks(projectPath) || gitRepoStatus === 'no-husky' || gitRepoStatus === 'ancestor-repo') {
+        return
+    }
+
+    const spinner = ora({
+        text: 'Initializing husky...',
+        color: 'green'
+    }).start()
+
+    try {
+        await installHuskyHooks(projectPath)
+
+        spinner.text = 'Husky initialized successfully'
+        spinner.succeed()
+    } catch (error) {
+        spinner.fail()
+        throw error
+    }
 }
 
 export const create = (program: Command) =>
@@ -146,7 +186,9 @@ export const create = (program: Command) =>
                     })
                     if (install) {
                         logger.info(pc.green(`Installing dependencies with ${resolvedPackageManager}...`))
+                        const gitRepoStatus = await prepareHusky(projectPath)
                         await installDependencies(projectPath, resolvedPackageManager)
+                        await initHusky(projectPath, gitRepoStatus)
                     }
                     return
                 }
@@ -190,7 +232,22 @@ export const create = (program: Command) =>
 
                 if (install) {
                     logger.info(pc.green(`Installing dependencies with ${resolvedPackageManager}...`))
+                    const gitRepoStatus = await prepareHusky(projectPath)
                     await installDependencies(projectPath, resolvedPackageManager)
+                    await initHusky(projectPath, gitRepoStatus)
+                    logger.info(pc.green(`\n✨ Project ready! Next steps:`))
+                    logger.info(pc.cyan(`   cd ${projectName}`))
+                    logger.info(pc.cyan(`   pnpm dev`))
+                    logger.info(pc.cyan(`   pnpm commit`))
+                } else {
+                    const hasHusky = hasHuskyHooks(projectPath)
+                    if (hasHusky) {
+                        logger.info(pc.yellow(`\n⚠️  Husky hooks not initialized.`))
+                        logger.info(pc.cyan(`   cd ${projectName}`))
+                        logger.info(pc.cyan(`   git init`))
+                        logger.info(pc.cyan(`   pnpm install`))
+                        logger.info(pc.cyan(`   pnpm commit`))
+                    }
                 }
             } catch (error) {
                 if (error instanceof Error && error.message === CANCELLED_MESSAGE) {

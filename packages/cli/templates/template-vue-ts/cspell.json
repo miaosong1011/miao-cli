@@ -1,5 +1,5 @@
 {
-    "import": ["@cspell/dict-lorem-ipsum/cspell-ext.json"],
+    "import": ["@cspell/dict-lorem-ipsum/cspell-ext.json", "@cspell/dict-vue/cspell-ext.json"],
     "caseSensitive": false,
     "dictionaries": ["custom-words"],
     "dictionaryDefinitions": [

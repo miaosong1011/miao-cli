@@ -22,7 +22,7 @@
         "spellcheck": "cspell lint --dot --gitignore --color --cache --show-suggestions \"**/*.@(html|js|cjs|mjs|ts|tsx|css|scss|md|vue)\"",
         "check": "pnpm lint && pnpm spellcheck",
         "commit": "git-cz",
-        "prepare": "husky"
+        "prepare": "is-ci || husky install"
     },
     "config": {
         "commitizen": {
@@ -44,6 +44,10 @@
         "*.{ts,tsx}": [
             "eslint --fix",
             "prettier --write --cache --parser=typescript"
+        ],
+        "*.vue": [
+            "eslint --fix",
+            "prettier --cache --write"
         ]
     },
     "dependencies": {
