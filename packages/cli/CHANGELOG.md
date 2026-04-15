@@ -1,5 +1,11 @@
 # @miaosong1011/miao-cli
 
+## 0.1.1
+
+### Patch Changes
+
+-   f6944b8: improve template
+
 ## 0.1.0
 
 ### Minor Changes
