@@ -15,6 +15,9 @@ jobs:
             contents: read
             pull-requests: read
         steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
             - name: Dependency review
               uses: actions/dependency-review-action@v4
 
